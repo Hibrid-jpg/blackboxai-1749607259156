@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sport Gym - Seguimiento Personalizado de Alimentación y Ejercicio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <div class="logo" aria-label="Logo Sport Gym">Sport Gym</div>
+    <nav class="nav-bar" role="tablist" aria-label="Navegación principal">
+      <button role="tab" aria-selected="true" aria-controls="sectionData" id="tabData" tabindex="0" data-section="datos">
+        <span class="material-icons" aria-hidden="true">person</span> Datos Personales
+      </button>
+      <button role="tab" aria-selected="false" aria-controls="sectionMetas" id="tabMetas" tabindex="-1" data-section="metas">
+        <span class="material-icons" aria-hidden="true">flag</span> Metas
+      </button>
+      <button role="tab" aria-selected="false" aria-controls="sectionPlan" id="tabPlan" tabindex="-1" data-section="plan">
+        <span class="material-icons" aria-hidden="true">restaurant_menu</span> Plan Alimenticio
+      </button>
+      <button role="tab" aria-selected="false" aria-controls="sectionProgreso" id="tabProgreso" tabindex="-1" data-section="progreso">
+        <span class="material-icons" aria-hidden="true">show_chart</span> Progreso
+      </button>
+      <button role="tab" aria-selected="false" aria-controls="sectionRutina" id="tabRutina" tabindex="-1" data-section="rutina">
+        <span class="material-icons" aria-hidden="true">fitness_center</span> Rutina de Ejercicio
+      </button>
+    </nav>
+    <button aria-label="Cambiar modo oscuro" title="Modo oscuro" class="dark-mode-toggle" id="darkModeToggle" aria-pressed="false" tabindex="0">
+      <span class="material-icons" aria-hidden="true">dark_mode</span> Oscuro
+    </button>
+  </header>
+
+  <main>
+    <section id="sectionDatos" class="section-card active" role="tabpanel" tabindex="0" aria-labelledby="tabData" aria-hidden="false">
+      <h2 class="section-header">Ingresa tus datos personales</h2>
+      <form id="personalDataForm" class="personal-data-form" novalidate>
+        <div class="form-group">
+          <label for="inputAge">Edad (años)</label>
+          <input type="number" id="inputAge" name="age" min="18" max="50" placeholder="Ej: 30" required aria-required="true" />
+          <div id="errorAge" class="input-error" aria-live="polite"></div>
+        </div>
+        <div class="form-group">
+          <label for="inputHeight">Estatura (cm)</label>
+          <input type="number" id="inputHeight" name="height" min="165" max="180" placeholder="Ej: 175" required aria-required="true" />
+          <div id="errorHeight" class="input-error" aria-live="polite"></div>
+        </div>
+        <div class="form-group">
+          <label for="inputWeight">Peso (kg)</label>
+          <input type="number" id="inputWeight" name="weight" min="55" max="85" placeholder="Ej: 70" required aria-required="true" />
+          <div id="errorWeight" class="input-error" aria-live="polite"></div>
+        </div>
+        <button type="submit" class="btn-submit-data" aria-label="Guardar datos personales y obtener recomendaciones">Guardar y Recomendar</button>
+      </form>
+    </section>
+
+    <section id="sectionMetas" class="section-card" role="tabpanel" tabindex="0" aria-labelledby="tabMetas" aria-hidden="true">
+      <h2 class="section-header">Tu meta recomendada</h2>
+      <div class="goals" role="list" aria-label="Meta recomendada">
+        <button type="button" class="goal-btn" aria-pressed="true" aria-label="Meta">
+          <span class="material-icons" aria-hidden="true">flag</span> <span id="recommendedGoal">-</span>
+        </button>
+      </div>
+    </section>
+
+    <section id="sectionPlan" class="section-card" role="tabpanel" tabindex="0" aria-labelledby="tabPlan" aria-hidden="true">
+      <h2 class="section-header">Plan alimenticio diario</h2>
+      <div class="meal-plan" aria-live="polite" aria-relevant="additions removals"></div>
+      <button id="addMealBtn" class="btn-log-meal" aria-label="Agregar comida al plan">
+        <span class="material-icons" aria-hidden="true">add_circle</span> Registrar comida
+      </button>
+    </section>
+
+    <section id="sectionProgreso" class="section-card" role="tabpanel" tabindex="0" aria-labelledby="tabProgreso" aria-hidden="true">
+      <h2 class="section-header">Tu progreso</h2>
+      <div class="progress-summary" aria-live="polite">
+        <div class="progress-card" tabindex="0">
+          <h4>Peso actual</h4>
+          <div class="value" id="weightProgress">-- kg</div>
+        </div>
+        <div class="progress-card" tabindex="0">
+          <h4>Calorías consumidas</h4>
+          <div class="value" id="caloriesProgress">-- kcal</div>
+        </div>
+        <div class="progress-card" tabindex="0">
+          <h4>Macronutrientes</h4>
+          <div class="value" id="macrosProgress">--</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="sectionRutina" class="section-card" role="tabpanel" tabindex="0" aria-labelledby="tabRutina" aria-hidden="true">
+      <h2 class="section-header">Rutina de ejercicio recomendada</h2>
+      <ul class="exercise-list" aria-live="polite" aria-relevant="additions removals">
+        <!-- Ejercicios se llenan dinámicamente -->
+      </ul>
+      <div style="margin-top:16px; font-size:0.9rem; color: var(--color-text-secondary);">
+        <strong>Rutina recomendada 5 días/semana:</strong>
+        <ul>
+          <li>Lunes: Cardio (30 min) + Full Body (peso corporal)</li>
+          <li>Martes: Core (abdominales y espalda baja) + Estiramiento</li>
+          <li>Miércoles: Piernas y glúteos + Caminata ligera</li>
+          <li>Jueves: HIIT (20 min) + Brazos y hombros</li>
+          <li>Viernes: Cardio suave + Yoga o movilidad articular</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <!-- Modal para registrar comida -->
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" id="mealModal">
+    <h3 class="modal-header" id="modalTitle">Registrar comida</h3>
+    <form id="mealForm">
+      <label for="mealName">Nombre de la comida</label>
+      <input type="text" id="mealName" name="mealName" required aria-required="true" autocomplete="off" />
+      <label for="mealCalories">Calorías (kcal)</label>
+      <input type="number" id="mealCalories" name="mealCalories" required min="1" max="2000" aria-required="true" />
+      <label for="mealProteins">Proteínas (g)</label>
+      <input type="number" id="mealProteins" name="mealProteins" required min="0" max="500" aria-required="true" />
+      <label for="mealCarbs">Carbohidratos (g)</label>
+      <input type="number" id="mealCarbs" name="mealCarbs" required min="0" max="500" aria-required="true" />
+      <label for="mealFats">Grasas (g)</label>
+      <input type="number" id="mealFats" name="mealFats" required min="0" max="500" aria-required="true" />
+      <div class="modal-actions">
+        <button type="button" class="btn-cancel" id="cancelBtn">Cancelar</button>
+        <button type="submit" class="btn-save">Guardar</button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    (() => {
+      // Elementos UI
+      const mealPlanContainer = document.querySelector('.meal-plan');
+      const addMealBtn = document.getElementById('addMealBtn');
+      const mealModal = document.getElementById('mealModal');
+      const mealForm = document.getElementById('mealForm');
+      const cancelBtn = document.getElementById('cancelBtn');
+      const weightProgress = document.getElementById('weightProgress');
+      const caloriesProgress = document.getElementById('caloriesProgress');
+      const macrosProgress = document.getElementById('macrosProgress');
+      const exerciseList = document.querySelector('.exercise-list');
+      const darkModeToggle = document.getElementById('darkModeToggle');
+      const navButtons = document.querySelectorAll('.nav-bar button');
+      const sections = {
+        datos: document.getElementById('sectionDatos'),
+        metas: document.getElementById('sectionMetas'),
+        plan: document.getElementById('sectionPlan'),
+        progreso: document.getElementById('sectionProgreso'),
+        rutina: document.getElementById('sectionRutina')
+      };
+      const personalDataForm = document.getElementById('personalDataForm');
+      const inputs = {
+        age: document.getElementById('inputAge'),
+        height: document.getElementById('inputHeight'),
+        weight: document.getElementById('inputWeight')
+      };
+      const errors = {
+        age: document.getElementById('errorAge'),
+        height: document.getElementById('errorHeight'),
+        weight: document.getElementById('errorWeight')
+      };
+      const recommendedGoalSpan = document.getElementById('recommendedGoal');
+
+      // Estado
+      let selectedGoal = null;
+      let meals = [];
+
+      // Navegación entre secciones
+      function switchSection(selectedSection) {
+        navButtons.forEach(btn => {
+          const isSelected = btn.dataset.section === selectedSection;
+          btn.setAttribute('aria-selected', isSelected);
+          btn.tabIndex = isSelected ? 0 : -1;
+          sections[btn.dataset.section].classList.toggle('active', isSelected);
+          sections[btn.dataset.section].setAttribute('aria-hidden', !isSelected);
+        });
+      }
+      navButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          switchSection(btn.dataset.section);
+        });
+      });
+
+      // Validar datos personales
+      function validatePersonalData() {
+        let valid = true;
+        // Edad
+        if (!inputs.age.value || inputs.age.value < 18 || inputs.age.value > 50) {
+          errors.age.textContent = "Edad válida: 18-50 años";
+          valid = false;
+        } else {
+          errors.age.textContent = "";
+        }
+        // Estatura
+        if (!inputs.height.value || inputs.height.value < 165 || inputs.height.value > 180) {
+          errors.height.textContent = "Estatura válida: 165-180 cm";
+          valid = false;
+        } else {
+          errors.height.textContent = "";
+        }
+        // Peso
+        if (!inputs.weight.value || inputs.weight.value < 55 || inputs.weight.value > 85) {
+          errors.weight.textContent = "Peso válido: 55-85 kg";
+          valid = false;
+        } else {
+          errors.weight.textContent = "";
+        }
+        return valid;
+      }
+
+      // Calcular IMC
+      function calculateBMI(weight, heightCm) {
+        const heightM = heightCm / 100;
+        const bmi = weight / (heightM * heightM);
+        return bmi;
+      }
+
+      // Elegir meta recomendada usando IMC y edad con base en tabla usuario promedio saludable
+      function getRecommendedGoal(bmi, age) {
+        // Rangos IMC recomendados base tabla (18.5-24.9)
+        // Edad: 18-25, 26-35, 36-50 (niveles similares)
+        if (bmi < 18.5) return 'Ganar masa muscular';
+        if (bmi >= 18.5 && bmi <= 24.9) return 'Mantener peso';
+        if (bmi > 24.9) return 'Bajar de peso';
+        return 'Mantener peso'; 
+      }
+
+      // Funciones para obtener planes alimenticios, ejercicios basados en tabla ejemplo dieta saludable
+      function getRecommendedMealPlan(data, goal) {
+        // Usaremos ejemplo dieta para mantener peso adulto promedio y adaptamos para metas
+        if(!goal) return [];
+
+        const basePlan = [
+          {
+            name: "Desayuno",
+            items: [
+              "Avena con leche vegetal o descremada",
+              "Fruta (plátano o manzana)",
+              "1 huevo cocido",
+              "Té verde o café sin azúcar"
+            ]
+          },
+          {
+            name: "Media mañana",
+            items: [
+              "Yogur natural bajo en grasa o puñado de nueces"
+            ]
+          },
+          {
+            name: "Almuerzo",
+            items: [
+              "Pechuga de pollo a la plancha",
+              "Ensalada de verduras variadas (con aceite de oliva)",
+              "Arroz integral o quinoa",
+              "Agua o infusión natural"
+            ]
+          },
+          {
+            name: "Merienda",
+            items: [
+              "Fruta (pera, papaya, fresas)",
+              "Pan integral con aguacate"
+            ]
+          },
+          {
+            name: "Cena",
+            items: [
+              "Pescado al horno",
+              "Verduras al vapor",
+              "Batata cocida o legumbres",
+              "Agua"
+            ]
+          }
+        ];
+
+        // Ajustar plan según la meta simplificada con porciones calóricas aproximadas
+        // Esta simplificación agrega calorías y macros estimados basado en meta
+        function planWithEstimates(plan, caloriesFactor) {
+          return plan.map(meal => {
+            // Calculo aproximado solo de ejemplo
+            let baseCalories = 0;
+            let baseProteins = 0;
+            let baseCarbs = 0;
+            let baseFats = 0;
+            switch(meal.name) {
+              case "Desayuno":
+                baseCalories = 350 * caloriesFactor; baseProteins=15*caloriesFactor; baseCarbs=55*caloriesFactor; baseFats=7*caloriesFactor; break;
+              case "Media mañana":
+                baseCalories = 150 * caloriesFactor; baseProteins=8*caloriesFactor; baseCarbs=10*caloriesFactor; baseFats=10*caloriesFactor; break;
+              case "Almuerzo":
+                baseCalories = 700 * caloriesFactor; baseProteins=50*caloriesFactor; baseCarbs=75*caloriesFactor; baseFats=18*caloriesFactor; break;
+              case "Merienda":
+                baseCalories = 300 * caloriesFactor; baseProteins=5*caloriesFactor; baseCarbs=35*caloriesFactor; baseFats=11*caloriesFactor; break;
+              case "Cena":
+                baseCalories = 450 * caloriesFactor; baseProteins=40*caloriesFactor; baseCarbs=40*caloriesFactor; baseFats=12*caloriesFactor; break;
+              default:
+                baseCalories=400*caloriesFactor; baseProteins=30*caloriesFactor; baseCarbs=40*caloriesFactor; baseFats=10*caloriesFactor; break;
+            }
+            return {
+              name: meal.name + (meal.items ? "" : ""),
+              calories: Math.round(baseCalories),
+              proteins: Math.round(baseProteins),
+              carbs: Math.round(baseCarbs),
+              fats: Math.round(baseFats),
+              description: meal.items ? meal.items : []
+            };
+          });
+        }
+
+        // Definir factor calórico aproximado según meta
+        // Ganar masa muscular más calorías, mantener peso factor 1, bajar peso factor menor
+        let calorieFactor = 1;
+        if(goal === 'ganar') calorieFactor = 1.25;
+        else if(goal === 'bajar') calorieFactor = 0.8;
+
+        return planWithEstimates(basePlan, calorieFactor);
+      }
+
+      // Rutina recomendada según tabla y meta
+      function getRecommendedExerciseRoutine(data, goal) {
+        // Rutina 5 días/semana ejemplo desde base
+        if(!goal) return [];
+        return [
+          {name: "Lunes: Cardio (30 min) + Full Body (peso corporal)", icon: "directions_run"},
+          {name: "Martes: Core (abdominales y espalda baja) + Estiramiento", icon: "self_improvement"},
+          {name: "Miércoles: Piernas y glúteos + Caminata ligera", icon: "directions_walk"},
+          {name: "Jueves: HIIT (20 min) + Brazos y hombros", icon: "whatshot"},
+          {name: "Viernes: Cardio suave + Yoga o movilidad articular", icon: "fitness_center"}
+        ];
+      }
+
+      // Actualizar visualizaciones
+      function updateMealPlan(data, goal) {
+        mealPlanContainer.innerHTML = "";
+        meals = [];
+        if (!goal) {
+          mealPlanContainer.innerHTML = "<p>Por favor, ingresa datos válidos para ver el plan alimenticio.</p>";
+          return;
+        }
+        const plan = getRecommendedMealPlan(data, goal);
+        plan.forEach(meal => {
+          // Incluir descripción alimenticia en el nombre para mostrar
+          const descriptionText = meal.description && meal.description.length ? meal.description.join(", ") : "";
+          addMeal({
+            name: meal.name + (descriptionText ? ": " + descriptionText : ""),
+            calories: meal.calories,
+            proteins: meal.proteins,
+            carbs: meal.carbs,
+            fats: meal.fats
+          }, false);
+        });
+        updateProgress(data);
+      }
+
+      function updateExerciseRoutine(data, goal) {
+        exerciseList.innerHTML = "";
+        if (!goal) {
+          exerciseList.innerHTML = "<p>Por favor, ingresa datos válidos para ver la rutina recomendada.</p>";
+          return;
+        }
+        const routine = getRecommendedExerciseRoutine(data, goal);
+        if(routine.length === 0) {
+          exerciseList.innerHTML = "<p>No hay ejercicios recomendados para tus datos.</p>";
+          return;
+        }
+        routine.forEach(item => {
+          const li = document.createElement('li');
+          li.className = 'exercise-item';
+          li.innerHTML = `<span class="material-icons exercise-icon" aria-hidden="true">${item.icon}</span>${item.name}`;
+          exerciseList.appendChild(li);
+        });
+      }
+
+      // Agregar comida visualmente y al array interno
+      function addMeal(meal, save = true) {
+        meals.push(meal);
+        renderMeals();
+        if (save) saveMeals();
+      }
+      // Renderizar lista comidas
+      function renderMeals() {
+        mealPlanContainer.innerHTML = "";
+        if (meals.length === 0) {
+          mealPlanContainer.innerHTML = "<p>No hay comidas registradas.</p>";
+          return;
+        }
+        meals.forEach(meal => {
+          const mealCard = document.createElement('div');
+          mealCard.className = 'meal-card';
+          mealCard.tabIndex = 0;
+          mealCard.innerHTML = `
+            <div class="meal-info">
+              <div class="meal-name">${meal.name}</div>
+              <div class="meal-details">Proteínas: ${meal.proteins}g · Carbs: ${meal.carbs}g · Grasas: ${meal.fats}g</div>
+            </div>
+            <div class="meal-calories">${meal.calories} kcal</div>
+          `;
+          mealPlanContainer.appendChild(mealCard);
+        });
+      }
+
+      // Guardar comidas en localStorage para persistencia simple
+      function saveMeals() {
+        localStorage.setItem('sportGymMeals', JSON.stringify(meals));
+      }
+      // Cargar comidas desde localStorage
+      function loadMeals() {
+        const saved = localStorage.getItem('sportGymMeals');
+        if (saved) {
+          meals = JSON.parse(saved);
+          renderMeals();
+          updateProgress();
+        }
+      }
+
+      // Actualizar resumen progreso basado en comidas registradas y peso
+      function updateProgress(data) {
+        if (!data) {
+          weightProgress.textContent = '-- kg';
+          caloriesProgress.textContent = '-- kcal';
+          macrosProgress.textContent = '--';
+          return;
+        }
+        weightProgress.textContent = data.weight + ' kg';
+
+        const totalCalories = meals.reduce((sum, m) => sum + m.calories, 0);
+        const totalProteins = meals.reduce((sum, m) => sum + m.proteins, 0);
+        const totalCarbs = meals.reduce((sum, m) => sum + m.carbs, 0);
+        const totalFats = meals.reduce((sum, m) => sum + m.fats, 0);
+
+        caloriesProgress.textContent = totalCalories + ' kcal';
+        macrosProgress.textContent = `P: ${totalProteins}g / C: ${totalCarbs}g / G: ${totalFats}g`;
+      }
+
+      // Mostrar modal y limpiar formulario
+      addMealBtn.addEventListener('click', () => {
+        mealForm.reset();
+        mealModal.classList.add('active');
+        mealModal.querySelector('#mealName').focus();
+      });
+      // Cancelar modal
+      cancelBtn.addEventListener('click', () => {
+        mealModal.classList.remove('active');
+        addMealBtn.focus();
+      });
+      // Guardar nueva comida desde modal
+      mealForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const newMeal = {
+          name: mealForm.mealName.value.trim(),
+          calories: parseInt(mealForm.mealCalories.value, 10),
+          proteins: parseInt(mealForm.mealProteins.value, 10),
+          carbs: parseInt(mealForm.mealCarbs.value, 10),
+          fats: parseInt(mealForm.mealFats.value, 10),
+        };
+        if (newMeal.name && newMeal.calories >= 1) {
+          addMeal(newMeal);
+          mealModal.classList.remove('active');
+          addMealBtn.focus();
+        }
+      });
+
+      // Toggle modo oscuro - persistir en localStorage
+      function loadDarkMode() {
+        const dark = localStorage.getItem('sportGymDarkMode') === 'true';
+        if(dark) {
+          document.body.classList.add('dark-mode');
+          darkModeToggle.setAttribute('aria-pressed', 'true');
+        } else {
+          document.body.classList.remove('dark-mode');
+          darkModeToggle.setAttribute('aria-pressed', 'false');
+        }
+      }
+      function toggleDarkMode() {
+        document.body.classList.toggle('dark-mode');
+        const isDark = document.body.classList.contains('dark-mode');
+        darkModeToggle.setAttribute('aria-pressed', isDark);
+        localStorage.setItem('sportGymDarkMode', isDark);
+      }
+      darkModeToggle.addEventListener('click', toggleDarkMode);
+
+      // Guardar datos personales localstorage
+      function savePersonalData(data) {
+        localStorage.setItem('sportGymPersonalData', JSON.stringify(data));
+      }
+      // Cargar datos personales
+      function loadPersonalData() {
+        const saved = localStorage.getItem('sportGymPersonalData');
+        if(!saved) return null;
+        try {
+          const data = JSON.parse(saved);
+          if(data.age) inputs.age.value = data.age;
+          if(data.height) inputs.height.value = data.height;
+          if(data.weight) inputs.weight.value = data.weight;
+          return data;
+        } catch(e) {
+          return null;
+        }
+      }
+
+      // Al enviar formulario
+      personalDataForm.addEventListener('submit', e => {
+        e.preventDefault();
+        if(!validatePersonalData()) return;
+
+        // Leer datos
+        const age = parseInt(inputs.age.value, 10);
+        const height = parseInt(inputs.height.value, 10);
+        const weight = parseInt(inputs.weight.value, 10);
+        const bmi = calculateBMI(weight, height);
+
+        // Determinar meta
+        selectedGoal = getRecommendedGoal(bmi, age);
+        recommendedGoalSpan.textContent = selectedGoal;
+
+        // Guardar datos
+        const personalData = {age, height, weight, bmi};
+        savePersonalData(personalData);
+
+        // Actualizar planes y rutinas
+        updateMealPlan(personalData, selectedGoal.toLowerCase().includes('bajar') ? 'bajar' : selectedGoal.toLowerCase().includes('ganar') ? 'ganar' : 'mantener');
+        updateExerciseRoutine(personalData, selectedGoal.toLowerCase().includes('bajar') ? 'bajar' : selectedGoal.toLowerCase().includes('ganar') ? 'ganar' : 'mantener');
+
+        // Cambiar a pestaña metas para mostrar meta recomendada
+        switchSection('metas');
+      });
+
+      // Inicializar app
+      function init() {
+        loadMeals();
+        loadDarkMode();
+        const savedData = loadPersonalData();
+        if(savedData) {
+          // Calcular meta y actualizar UI si hay datos guardados
+          const bmi = savedData.bmi || calculateBMI(savedData.weight, savedData.height);
+          const goal = getRecommendedGoal(bmi, savedData.age);
+          selectedGoal = goal;
+          recommendedGoalSpan.textContent = goal;
+          updateMealPlan(savedData, goal.toLowerCase().includes('bajar') ? 'bajar' : goal.toLowerCase().includes('ganar') ? 'ganar' : 'mantener');
+          updateExerciseRoutine(savedData, goal.toLowerCase().includes('bajar') ? 'bajar' : goal.toLowerCase().includes('ganar') ? 'ganar' : 'mantener');
+          switchSection('metas');
+        } else {
+          switchSection('datos');
+        }
+      }
+      init();
+    })();
+  </script>
+</body>
+</html>
